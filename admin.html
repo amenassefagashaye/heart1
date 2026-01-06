@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>አሰፋ ዲጂታል ቢንጎ - Admin</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="admin-header">
+            <h1 class="amharic-text">🔧 የጨዋታ አስተዳዳሪ</h1>
+            <button id="backBtn" class="btn btn-secondary amharic-text">ወደ ጨዋታ ተመለስ</button>
+        </div>
+        
+        <div class="border-container">
+            <div class="border green"></div>
+            <div class="border yellow"></div>
+            <div class="border red"></div>
+            
+            <div class="admin-content">
+                <!-- Create Room -->
+                <div class="admin-section">
+                    <h2 class="amharic-text">አዲስ ጨዋታ ቤት ፍጠር</h2>
+                    <div class="form-group">
+                        <label class="amharic-text">የአስተዳዳሪ ስም</label>
+                        <input type="text" id="adminName" placeholder="አስተዳዳሪ ስም" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="amharic-text">የቢንጎ አይነት</label>
+                        <select id="gameType" class="form-control">
+                            <option value="75ball">75-ቢንጎ</option>
+                            <option value="90ball">90-ቢንጎ</option>
+                            <option value="30ball">30-ቢንጎ</option>
+                            <option value="pattern">ንድፍ ቢንጎ</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="amharic-text">የጨዋታ ሚና</label>
+                        <select id="stakeAmount" class="form-control">
+                            <option value="25">25 ብር</option>
+                            <option value="50">50 ብር</option>
+                            <option value="100">100 ብር</option>
+                            <option value="200">200 ብር</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="amharic-text">የጨዋታ ፍቅር</label>
+                        <select id="maxPlayers" class="form-control">
+                            <option value="10">10 ተጫዋቾች</option>
+                            <option value="20">20 ተጫዋቾች</option>
+                            <option value="50">50 ተጫዋቾች</option>
+                            <option value="90" selected>90 ተጫዋቾች</option>
+                        </select>
+                    </div>
+                    <button id="createRoomBtn" class="btn btn-success amharic-text">ጨዋታ ቤት ፍጠር</button>
+                </div>
+                
+                <!-- Active Rooms -->
+                <div class="admin-section">
+                    <h2 class="amharic-text">ንቁ የጨዋታ ቤቶች</h2>
+                    <div id="activeRooms" class="rooms-list">
+                        <!-- Rooms will be populated here -->
+                    </div>
+                </div>
+                
+                <!-- System Controls -->
+                <div class="admin-section">
+                    <h2 class="amharic-text">የስርዓት መቆጣጠሪያዎች</h2>
+                    <div class="control-grid">
+                        <button id="broadcastBtn" class="btn btn-info amharic-text">ማስታወቂያ ላክ</button>
+                        <button id="kickAllBtn" class="btn btn-danger amharic-text">ሁሉንም አውጣ</button>
+                        <button id="restartServerBtn" class="btn btn-warning amharic-text">ሰርቨር ዳግም ጀምር</button>
+                        <button id="viewLogsBtn" class="btn btn-secondary amharic-text">ምዝገባዎች ይመልከቱ</button>
+                    </div>
+                </div>
+                
+                <!-- Game Statistics -->
+                <div class="admin-section">
+                    <h2 class="amharic-text">የጨዋታ ስታቲስቲክስ</h2>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-label amharic-text">አጠቃላይ ተጫዋቾች</div>
+                            <div class="stat-value" id="totalPlayers">0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label amharic-text">ንቁ ጨዋታዎች</div>
+                            <div class="stat-value" id="activeGames">0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label amharic-text">ዛሬ የተሸነፉ</div>
+                            <div class="stat-value" id="todayWins">0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label amharic-text">አጠቃላይ ውርድ</div>
+                            <div class="stat-value" id="totalStake">0 ብር</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="ws.js"></script>
+    <script src="game.js"></script>
+    <script>
+        // Check admin password
+        const adminPassword = prompt('የአስተዳዳሪ የይለፍ ቃል ያስገቡ:');
+        if (adminPassword !== 'asse2123') {
+            alert('ያልተፈቀደ መዳረሻ!');
+            window.location.href = 'index.html';
+        }
+        
+        // Initialize admin connection
+        connectAsAdmin();
+        
+        // Back to game button
+        document.getElementById('backBtn').addEventListener('click', () => {
+            window.location.href = 'index.html?admin=true';
+        });
+        
+        // Create room button
+        document.getElementById('createRoomBtn').addEventListener('click', () => {
+            const adminName = document.getElementById('adminName').value;
+            const gameType = document.getElementById('gameType').value;
+            const stakeAmount = document.getElementById('stakeAmount').value;
+            const maxPlayers = document.getElementById('maxPlayers').value;
+            
+            if (!adminName) {
+                alert('እባክዎ የአስተዳዳሪ ስም ያስገቡ');
+                return;
+            }
+            
+            createGameRoom(adminName, gameType, stakeAmount, maxPlayers);
+        });
+        
+        // System control buttons
+        document.getElementById('broadcastBtn').addEventListener('click', () => {
+            const message = prompt('ማስታወቂያ ይጻፉ:');
+            if (message) {
+                sendBroadcast(message);
+            }
+        });
+        
+        document.getElementById('kickAllBtn').addEventListener('click', () => {
+            if (confirm('ሁሉንም ተጫዋቾች ከጨዋታ ማስወገድ ይፈልጋሉ?')) {
+                kickAllPlayers();
+            }
+        });
+        
+        document.getElementById('restartServerBtn').addEventListener('click', () => {
+            if (confirm('ሰርቨር እንደገና ማስጀመር ይፈልጋሉ?')) {
+                restartServer();
+            }
+        });
+        
+        document.getElementById('viewLogsBtn').addEventListener('click', () => {
+            viewServerLogs();
+        });
+        
+        // Function to update room list
+        function updateRoomList(rooms) {
+            const container = document.getElementById('activeRooms');
+            container.innerHTML = '';
+            
+            rooms.forEach(room => {
+                const roomElement = document.createElement('div');
+                roomElement.className = 'room-card';
+                roomElement.innerHTML = `
+                    <div class="room-header">
+                        <span class="room-id">ቤት: ${room.id}</span>
+                        <span class="room-players">👥 ${room.players}/${room.maxPlayers}</span>
+                    </div>
+                    <div class="room-body">
+                        <div class="room-info amharic-text">
+                            <div>አይነት: ${room.gameType}</div>
+                            <div>ውርድ: ${room.stake} ብር</div>
+                            <div>አስተዳዳሪ: ${room.admin}</div>
+                        </div>
+                        <div class="room-actions">
+                            <button class="btn btn-sm btn-info" onclick="joinRoomAsAdmin('${room.id}')">ግባ</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteRoom('${room.id}')">ሰርዝ</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(roomElement);
+            });
+        }
+        
+        // Function to update statistics
+        function updateStatistics(stats) {
+            document.getElementById('totalPlayers').textContent = stats.totalPlayers || 0;
+            document.getElementById('activeGames').textContent = stats.activeGames || 0;
+            document.getElementById('todayWins').textContent = stats.todayWins || 0;
+            document.getElementById('totalStake').textContent = `${stats.totalStake || 0} ብር`;
+        }
+    </script>
+</body>
+</html>

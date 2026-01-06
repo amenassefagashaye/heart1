@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>አሰፋ ዲጂታል ቢንጎ - Player</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Triple Border Effect -->
+        <div class="border-container">
+            <div class="border green"></div>
+            <div class="border yellow"></div>
+            <div class="border red"></div>
+            
+            <div class="main-content">
+                <!-- Room Join Section -->
+                <div id="joinSection" class="section active">
+                    <h1 class="amharic-text">🎮 አሰፋ ዲጂታል ቢንጎ</h1>
+                    <div class="form-group">
+                        <label class="amharic-text">ስም</label>
+                        <input type="text" id="playerName" placeholder="ሙሉ ስም" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="amharic-text">የጨዋታ ቤት ቁጥር</label>
+                        <input type="text" id="roomCode" placeholder="1234" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="amharic-text">የሚታወቅ ቁጥር</label>
+                        <input type="text" id="inviteCode" placeholder="123456" class="form-control">
+                    </div>
+                    <button id="joinBtn" class="btn btn-success amharic-text">ተቀላቀል</button>
+                    
+                    <div class="info-box">
+                        <p class="amharic-text">📱 በጨዋታው ለመሳተፍ:</p>
+                        <ol class="amharic-text">
+                            <li>ስምዎን ያስገቡ</li>
+                            <li>የጨዋታ ቤት ቁጥር ያስገቡ (4 አሃዝ)</li>
+                            <li>የሚታወቅ ቁጥር ያስገቡ (6 አሃዝ)</li>
+                            <li>"ተቀላቀል" ይጫኑ</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Game Lobby -->
+                <div id="lobbySection" class="section">
+                    <h2 class="amharic-text" id="roomTitle">ጨዋታ ቤት: <span id="roomDisplay"></span></h2>
+                    <div class="players-list" id="playersList">
+                        <div class="amharic-text">ተጫዋቾች እየመጡ ነው...</div>
+                    </div>
+                    <div class="status-box">
+                        <p class="amharic-text" id="gameStatus">ጨዋታ እየተጀመረ ነው...</p>
+                        <div id="adminControls" class="hidden">
+                            <button id="startGameBtn" class="btn btn-warning amharic-text">ጨዋታ ጀምር</button>
+                            <button id="endGameBtn" class="btn btn-danger amharic-text">ጨዋታ አቁም</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Board -->
+                <div id="gameSection" class="section">
+                    <div class="game-header">
+                        <h2 class="amharic-text" id="gameRoomTitle"></h2>
+                        <div class="player-count amharic-text">ተጫዋቾች: <span id="playerCount">0</span></div>
+                    </div>
+                    
+                    <div class="game-board">
+                        <div id="bingoBoard">
+                            <!-- Board will be generated here -->
+                        </div>
+                    </div>
+                    
+                    <div class="game-controls">
+                        <div class="called-numbers">
+                            <h3 class="amharic-text">ተጠርተው ያሉ ቁጥሮች</h3>
+                            <div id="calledNumbers" class="numbers-display"></div>
+                        </div>
+                        
+                        <div class="current-number">
+                            <div class="number-circle" id="currentNumber">
+                                <span>--</span>
+                            </div>
+                            <div class="number-label amharic-text">አሁን የተጠራ</div>
+                        </div>
+                        
+                        <button id="bingoBtn" class="btn btn-bingo amharic-text">ቢንጎ! 🎉</button>
+                    </div>
+                    
+                    <div class="chat-section">
+                        <div id="chatMessages" class="chat-messages"></div>
+                        <div class="chat-input">
+                            <input type="text" id="chatInput" placeholder="መልዕክት ይጻፉ..." class="amharic-text">
+                            <button id="sendChatBtn" class="btn btn-info">➤</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Winner Announcement -->
+                <div id="winnerSection" class="section hidden">
+                    <div class="winner-box">
+                        <div class="confetti">🎉</div>
+                        <h2 class="amharic-text">ቢንጎ!</h2>
+                        <div class="winner-name amharic-text" id="winnerName"></div>
+                        <div class="win-pattern amharic-text" id="winPattern"></div>
+                        <div class="win-time amharic-text" id="winTime"></div>
+                        <button id="continueBtn" class="btn btn-success amharic-text">ቀጥል</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Elements -->
+    <audio id="callSound" src="https://assets.mixkit.co/sfx/preview/mixkit-bell-notification-933.mp3" preload="auto"></audio>
+    <audio id="winSound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" preload="auto"></audio>
+    <audio id="joinSound" src="https://assets.mixkit.co/sfx/preview/mixkit-game-ball-tap-2073.mp3" preload="auto"></audio>
+
+    <script src="config.js"></script>
+    <script src="ws.js"></script>
+    <script src="rtc.js"></script>
+    <script src="game.js"></script>
+    <script>
+        // Check if admin
+        const urlParams = new URLSearchParams(window.location.search);
+        const isAdmin = urlParams.get('admin') === 'true';
+        
+        if (isAdmin) {
+            document.getElementById('adminControls').classList.remove('hidden');
+        }
+        
+        // Initialize player name from localStorage
+        const savedName = localStorage.getItem('bingoPlayerName');
+        if (savedName) {
+            document.getElementById('playerName').value = savedName;
+        }
+        
+        // Join button handler
+        document.getElementById('joinBtn').addEventListener('click', () => {
+            const playerName = document.getElementById('playerName').value;
+            const roomCode = document.getElementById('roomCode').value;
+            const inviteCode = document.getElementById('inviteCode').value;
+            
+            if (!playerName || !roomCode || !inviteCode) {
+                alert('እባክዎ ሁሉንም መረጃዎች ያስገቡ');
+                return;
+            }
+            
+            // Save name to localStorage
+            localStorage.setItem('bingoPlayerName', playerName);
+            
+            // Connect to WebSocket
+            connectToServer(playerName, roomCode, inviteCode);
+        });
+        
+        // Start game button (admin only)
+        document.getElementById('startGameBtn')?.addEventListener('click', () => {
+            startGame();
+        });
+        
+        // End game button (admin only)
+        document.getElementById('endGameBtn')?.addEventListener('click', () => {
+            endGame();
+        });
+        
+        // Bingo button
+        document.getElementById('bingoBtn').addEventListener('click', () => {
+            declareBingo();
+        });
+        
+        // Send chat message
+        document.getElementById('sendChatBtn').addEventListener('click', sendChatMessage);
+        document.getElementById('chatInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendChatMessage();
+        });
+        
+        // Continue button after win
+        document.getElementById('continueBtn').addEventListener('click', () => {
+            document.getElementById('winnerSection').classList.add('hidden');
+            document.getElementById('gameSection').classList.remove('hidden');
+        });
+        
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+    </script>
+</body>
+</html>
