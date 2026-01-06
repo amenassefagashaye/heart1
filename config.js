@@ -5,7 +5,7 @@ const WS_SERVER_URL = (() => {
         return 'ws://localhost:8080';
     } else {
         // Replace with your actual Deno server URL
-        return 'wss://ameng-gogs-heart2-71.deno.dev/
+        return 'htpps://ameng-gogs-heart2-71.deno.dev/
     }
 })();
 
@@ -161,3 +161,4 @@ const Storage = {
 
 
 window.Storage = Storage;
+
